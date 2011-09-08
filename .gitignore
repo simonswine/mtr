@@ -1,0 +1,8 @@
+*.o
+mtr
+config.log
+config.h
+config.status
+img/Makefile
+stamp-h1
+.deps
