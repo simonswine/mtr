@@ -53,13 +53,13 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(sbindir)" "$(DESTDIR)$(man8dir)"
 sbinPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(sbin_PROGRAMS)
-am_mtr_OBJECTS = mtr.$(OBJEXT) net.$(OBJEXT) dns.$(OBJEXT) \
+am_mtr_OBJECTS = mtr.$(OBJEXT) net.$(OBJEXT) dns.$(OBJEXT) asn.$(OBJEXT) \
 	raw.$(OBJEXT) split.$(OBJEXT) display.$(OBJEXT) \
 	report.$(OBJEXT) getopt.$(OBJEXT) getopt1.$(OBJEXT) \
 	select.$(OBJEXT)
 mtr_OBJECTS = $(am_mtr_OBJECTS)
 mtr_LDADD = $(LDADD)
-DEFAULT_INCLUDES = -I. -I$(srcdir) -I.
+DEFAULT_INCLUDES = -I. -I$(srcdir) -I. -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
@@ -123,7 +123,7 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
-LIBS = @LIBS@
+LIBS = @LIBS@ -lglib-2.0
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
 OBJEXT = @OBJEXT@
@@ -179,6 +179,7 @@ man_MANS = mtr.8
 mtr_SOURCES = mtr.c \
               net.c net.h \
               dns.c dns.h \
+              asn.c asn.h \
               raw.c raw.h \
               split.c split.h \
               display.c display.h \
@@ -286,6 +287,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/curses.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/display.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dns.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/asn.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/getopt.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/getopt1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtk.Po@am__quote@

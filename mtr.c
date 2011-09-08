@@ -34,6 +34,7 @@
 #include "dns.h"
 #include "report.h"
 #include "net.h"
+#include "asn.h"
 
 
 #ifdef ENABLE_IPV6
@@ -148,6 +149,7 @@ void parse_arg (int argc, char **argv)
     { "udp", 0, 0, 'u' },	/* UDP (default is ICMP) */
     { "inet", 0, 0, '4' },	/* IPv4 only */
     { "inet6", 0, 0, '6' },	/* IPv6 only */
+    { "aslookup", 0, 0, 'z' },  /* Do AS lookup */
     { 0, 0, 0, 0 }
   };
 
@@ -273,6 +275,9 @@ void parse_arg (int argc, char **argv)
       fprintf( stderr, "IPv6 not enabled.\n" );
       break;
 #endif
+    case 'z':
+      PrintAS = 1;
+      break;
     }
   }
 
@@ -377,7 +382,7 @@ int main(int argc, char **argv)
   if (PrintHelp) {
     printf("usage: %s [-hvrwctglspniu46] [--help] [--version] [--report]\n"
 	   "\t\t[--report-wide] [--report-cycles=COUNT] [--curses] [--gtk]\n"
-           "\t\t[--raw] [--split] [--no-dns] [--address interface]\n" /* BL */
+           "\t\t[--raw] [--split] [--no-dns] [--address interface] [--aslookup]\n" /* BL */
            "\t\t[--psize=bytes/-s bytes]\n"            /* ok */
            "\t\t[--report-wide|-w] [-u]\n"            /* rew */
 	   "\t\t[--interval=SECONDS] HOSTNAME [PACKETSIZE]\n", argv[0]);
