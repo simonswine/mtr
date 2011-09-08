@@ -309,16 +309,18 @@ void mtr_curses_hosts(int startstat)
       struct in6_addr addr6 = *addr;
 
       if (PrintAS) {
+
 	#define NAMELEN 127
 	char query[NAMELEN];
 	char* chip = (char*) &query;
 	char* chas = NULL;
 	char** key_ptr = &chip;
 	char** value_ptr = &chas;
+//	struct ip_t* v6_addr =(struct ip_t*	) &(addr6.s6_addr)
 
 	if (af == AF_INET6) {
 		// Get IPv6 Revere Domain
-		addr2ip6arpa( &(addr6.s6_addr), tempstring );
+		addr2ip6arpa( (ip_t*) addr6.s6_addr, tempstring );
 	
 		// Remove ARPA-Domain
 		tempstring[strlen(tempstring)-9] = '\0';
