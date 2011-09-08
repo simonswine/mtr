@@ -297,6 +297,7 @@ void mtr_curses_hosts(int startstat)
   int i, j;
   int hd_len;
   char buf[1024];
+  char tempstring[16384+1+1];
 
   max = net_max();
 
@@ -308,40 +309,53 @@ void mtr_curses_hosts(int startstat)
       struct in6_addr addr6 = *addr;
 
       if (PrintAS) {
-              u_char ipv4[4];
-              ipv4[0] = addr6.s6_addr[0];
-              ipv4[1] = addr6.s6_addr[1];
-              ipv4[2] = addr6.s6_addr[2];
-              ipv4[3] = addr6.s6_addr[3];
+	#define NAMELEN 127
+	char query[NAMELEN];
+	char* chip = (char*) &query;
+	char* chas = NULL;
+	char** key_ptr = &chip;
+	char** value_ptr = &chas;
 
-#define NAMELEN 127
-              char ipv4_buf[NAMELEN];
-              char* chip = (char*) &ipv4_buf;
-              char* chas = NULL;
-              char** key_ptr = &chip;
-              char** value_ptr = &chas;
+	if (af == AF_INET6) {
+		// Get IPv6 Revere Domain
+		addr2ip6arpa( &(addr6.s6_addr), tempstring );
+	
+		// Remove ARPA-Domain
+		tempstring[strlen(tempstring)-9] = '\0';
+
+		// Add Search Domain
+		if (snprintf(query, NAMELEN, "%s.origin6.asn.cymru.com", tempstring) >= NAMELEN) {
+		      return;
+		}
+	}
+
+	if (af == AF_INET) {
+		u_char ipv4[4];
+		ipv4[0] = addr6.s6_addr[0];
+		ipv4[1] = addr6.s6_addr[1];
+		ipv4[2] = addr6.s6_addr[2];
+		ipv4[3] = addr6.s6_addr[3];
+
+		if (snprintf(query, NAMELEN, "%d.%d.%d.%d.origin.asn.cymru.com", ipv4[3],
+				      ipv4[2], ipv4[1], ipv4[0]) >= NAMELEN) {
+		      return;
+		}
+	}
+
+	gboolean result =
+	      g_hash_table_lookup_extended
+	      (ashash, query, (gpointer*)key_ptr, (gpointer*)value_ptr);
+	if (!result) {
+	      char* as = asn_lookup(query);
+	      chip = (char*) strdup(query);
+	      chas = (char*) as;
+	      g_hash_table_insert(ashash, chip, chas);
+	}
+	//g_hash_table_destroy(hash);
 
 
-              if (snprintf(ipv4_buf, NAMELEN, "%d.%d.%d.%d.asn.routeviews.org", ipv4[3],
-                                      ipv4[2], ipv4[1], ipv4[0]) >= NAMELEN) {
-                      return;
-              }
-
-
-
-              gboolean result =
-                      g_hash_table_lookup_extended
-                      (ashash, ipv4_buf, (gpointer*)key_ptr, (gpointer*)value_ptr);
-              if (!result) {
-                      char* as = asn_lookup(ipv4_buf);
-                      chip = (char*) strdup(ipv4_buf);
-                      chas = (char*) as;
-                      g_hash_table_insert(ashash, chip, chas);
-              }
-              //g_hash_table_destroy(hash);
-
-
-              printw("[AS%s] ", chas);
+	printw("[AS%s] ", chas);
+	
       }
       name = dns_lookup(addr);
       if (! net_up(at))
